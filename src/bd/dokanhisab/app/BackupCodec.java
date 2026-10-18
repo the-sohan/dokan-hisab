@@ -76,7 +76,7 @@ public final class BackupCodec {
     private static String id(JSONObject obj,String key)throws Exception {String v=string(obj,key);if(!v.matches("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"))throw bad();return v;}
     private static long integer(JSONObject obj,String key)throws Exception {Object v=obj.get(key);if(!(v instanceof Integer)&&!(v instanceof Long))throw bad();return ((Number)v).longValue();}
     private static void timestamps(JSONObject obj)throws Exception {if(integer(obj,"created_at")<0||integer(obj,"updated_at")<0)throw bad();if(!obj.has("deleted_at"))throw bad();if(!obj.isNull("deleted_at")&&integer(obj,"deleted_at")<0)throw bad();}
-    private static IllegalArgumentException bad(){return new IllegalArgumentException("এটি একটি সঠিক dokan hisab ব্যাকআপ ফাইল নয়।");}
+    private static IllegalArgumentException bad(){return new IllegalArgumentException("এটি একটি সঠিক Dokan Hisab ব্যাকআপ ফাইল নয়।");}
     static void restoreDatabase(SQLiteDatabase db,Snapshot snap)throws Exception {
         // Revalidate at the transaction boundary, even when the caller holds a Snapshot.
         Snapshot verified=parse(snap.bytes());db.beginTransaction();

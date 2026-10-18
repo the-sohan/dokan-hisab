@@ -85,7 +85,7 @@ public final class MainActivity extends Activity {
     private void footer(View view) { LinearLayout panel=column(); panel.setPadding(dp(20),dp(10),dp(20),dp(14)); add(panel,view,0); root.addView(panel); }
     private void home() {
         all=store.customers(); long balance=0; int due=0; for (LedgerStore.Customer c:all) { balance+=c.balance(); if(c.balance()>0) due++; }
-        header("dokan hisab","আপনার দোকানের বাকির খাতা",false); scrollContent();
+        header("Dokan Hisab","আপনার দোকানের বাকির খাতা",false); scrollContent();
         LinearLayout summary=card(green); add(summary,text("মোট পাওনা",15,Color.rgb(214,235,219),false),0); TextView total=text(Money.format(balance),34,Color.WHITE,true); total.setContentDescription("মোট পাওনা "+Money.input(balance)+" টাকা"); add(summary,total,8);
         add(summary,text(Money.bn(Integer.toString(due))+" জনের কাছে বাকি আছে",14,Color.rgb(214,235,219),false),10); add(content,summary,0);
         LinearLayout heading=row(); weighted(heading,text("কাস্টমার",21,ink,true)); heading.addView(text(Money.bn(Integer.toString(all.size()))+" জন",14,muted,false)); add(content,heading,24);
@@ -198,7 +198,7 @@ public final class MainActivity extends Activity {
         int flags=data.getFlags()&(Intent.FLAG_GRANT_READ_URI_PERMISSION|Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         try{getContentResolver().takePersistableUriPermission(uri,flags);BackupManager.target(this,"cloud",uri);BackupManager.schedule(this);backupTask("Drive ব্যাকআপ যুক্ত হচ্ছে…",()->{String errors=BackupManager.run(this,true);return errors.isEmpty()?"Drive ব্যাকআপ যুক্ত হয়েছে। এই ফাইলটি প্রায় প্রতি ১ ঘণ্টায় অটো আপডেট হবে।":errors;});}catch(Exception ex){message("ফাইলটিতে স্থায়ীভাবে লেখার অনুমতি পাওয়া যায়নি। অন্য জায়গায় ফাইল সেভ করুন।");}
     }
-    private void message(String body) { new AlertDialog.Builder(this).setTitle("dokan hisab").setMessage(body).setPositiveButton("ঠিক আছে",null).show(); }
+    private void message(String body) { new AlertDialog.Builder(this).setTitle("Dokan Hisab").setMessage(body).setPositiveButton("ঠিক আছে",null).show(); }
     private void toast(String value) { Toast.makeText(this,value,Toast.LENGTH_SHORT).show(); }
     private void hideKeyboard() { android.view.inputmethod.InputMethodManager manager=(android.view.inputmethod.InputMethodManager)getSystemService(INPUT_METHOD_SERVICE); View focus=getCurrentFocus(); if(focus!=null)manager.hideSoftInputFromWindow(focus.getWindowToken(),0); }
 }
