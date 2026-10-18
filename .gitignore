@@ -1,0 +1,32 @@
+# Local builds, generated artifacts, and APK signing material.
+/build/
+/.gradle/
+/local.properties
+*.apk
+*.aab
+*.idsig
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+*.key
+
+# Private license inventory, credentials, and local ledger/backup data.
+/private/
+.env
+.env.*
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+*-backup*.json
+licenses.json
+license-keys*
+
+# Machine-specific editor and OS files.
+/.idea/
+/.vscode/
+.DS_Store
+__pycache__/
+*.pyc

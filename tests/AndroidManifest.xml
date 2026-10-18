@@ -1,0 +1,6 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="bd.dokanhisab.tests">
+    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="35" />
+    <application android:label="Ledger checks"><provider android:name="bd.dokanhisab.tests.TestBackupProvider" android:authorities="bd.dokanhisab.tests.files" android:exported="true" /></application>
+    <instrumentation android:name="bd.dokanhisab.tests.LedgerInstrumentation" android:targetPackage="bd.dokanhisab.app" />
+    <instrumentation android:name="bd.dokanhisab.tests.BackupInstrumentation" android:targetPackage="bd.dokanhisab.app" />
+</manifest>
