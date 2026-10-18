@@ -10,7 +10,7 @@ public final class BackupJobService extends JobService {
     private final ExecutorService executor=Executors.newSingleThreadExecutor();
     private Future<?> work;
     @Override public boolean onStartJob(JobParameters params){
-        if(!LicenseManager.isPro(this)||!BackupManager.prefs(this).getBoolean("enabled",true))return false;
+        if(!BackupManager.automaticConfigured(this))return false;
         work=executor.submit(()->{try{String error=BackupManager.run(this,false);jobFinished(params,!error.isEmpty());}catch(Exception ex){jobFinished(params,true);}});return true;
     }
     @Override public boolean onStopJob(JobParameters params){if(work!=null)work.cancel(true);return true;}

@@ -13,6 +13,6 @@ cp build/instrumentation/resources.apk build/instrumentation/unsigned.apk
 (cd build/instrumentation/dex && zip -q -u ../unsigned.apk classes.dex)
 "$BT/zipalign" -f 4 build/instrumentation/unsigned.apk build/instrumentation/aligned.apk
 "$BT/apksigner" sign --ks build/keys/local-test.jks --ks-key-alias dokan --ks-pass pass:android --key-pass pass:android --out build/instrumentation/tests.apk build/instrumentation/aligned.apk
-"$ADB" install -r build/dokan-hisab-0.2.0.apk
+"$ADB" install -r build/dokan-hisab-0.3.0.apk
 "$ADB" install -r build/instrumentation/tests.apk
 "$ADB" shell am instrument -w bd.dokanhisab.tests/bd.dokanhisab.tests.LedgerInstrumentation

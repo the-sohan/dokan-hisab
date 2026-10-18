@@ -18,21 +18,25 @@ import java.util.Comparator;
 /** Writes only user-chosen document URIs; no account credentials or broad Drive access. */
 public final class BackupManager {
     public static final int JOB_ID=53471;
-    public static final long HOUR=3600000L,DAY=24*HOUR;
+    public static final long HOUR=3600000L;
     private static final Object LOCK=new Object();
     public static SharedPreferences prefs(Context c){return c.getSharedPreferences("backup",0);}
     public static void schedule(Context c) {
         JobScheduler jobs=(JobScheduler)c.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        if(!LicenseManager.isPro(c)||!prefs(c).getBoolean("enabled",true)){jobs.cancel(JOB_ID);return;}
-        long period=prefs(c).getLong("interval",HOUR);JobInfo current=jobs.getPendingJob(JOB_ID);
-        if(current!=null&&current.getIntervalMillis()==period)return;
-        JobInfo job=new JobInfo.Builder(JOB_ID,new ComponentName(c,BackupJobService.class)).setPeriodic(period,Math.min(period/4,15*60000L)).setPersisted(true).setRequiresBatteryNotLow(true).build();
+        SharedPreferences p=prefs(c);
+        // Version 0.3 removes the old phone auto-backup target and interval controls.
+        p.edit().remove("local_uri").remove("local_hash").remove("local_at").remove("local_error").remove("enabled").remove("interval").apply();
+        if(!LicenseManager.isPro(c)||p.getString("cloud_uri","").isEmpty()){jobs.cancel(JOB_ID);return;}
+        JobInfo current=jobs.getPendingJob(JOB_ID);
+        if(current!=null&&current.getIntervalMillis()==HOUR)return;
+        JobInfo job=new JobInfo.Builder(JOB_ID,new ComponentName(c,BackupJobService.class)).setPeriodic(HOUR,15*60000L).setPersisted(true).setRequiresBatteryNotLow(true).build();
         if(jobs.schedule(job)!=JobScheduler.RESULT_SUCCESS)throw new IllegalStateException("স্বয়ংক্রিয় ব্যাকআপ চালু করা যায়নি।");
     }
-    public static boolean due(Context c){return LicenseManager.isPro(c)&&prefs(c).getBoolean("enabled",true)&&System.currentTimeMillis()-prefs(c).getLong("checked_at",0)>=prefs(c).getLong("interval",HOUR);}
+    public static boolean automaticConfigured(Context c){return LicenseManager.isPro(c)&&!prefs(c).getString("cloud_uri","").isEmpty();}
+    public static boolean due(Context c){return automaticConfigured(c)&&System.currentTimeMillis()-prefs(c).getLong("checked_at",0)>=HOUR;}
     public static void target(Context c,String kind,Uri uri) {
         LicenseManager.requirePro(c);
-        if(!kind.equals("local")&&!kind.equals("cloud"))throw new IllegalArgumentException();
+        if(!kind.equals("cloud"))throw new IllegalArgumentException();
         prefs(c).edit().putString(kind+"_uri",uri.toString()).remove(kind+"_hash").remove(kind+"_error").apply();
     }
     public static void disconnect(Context c,String kind){LicenseManager.requirePro(c);prefs(c).edit().remove(kind+"_uri").remove(kind+"_hash").remove(kind+"_at").remove(kind+"_error").apply();}
@@ -49,13 +53,12 @@ public final class BackupManager {
                     p.edit().putString("internal_hash",snap.hash).putLong("internal_at",now).apply();
                 }
                 StringBuilder errors=new StringBuilder();
-                for(String kind:new String[]{"local","cloud"}){
-                    String raw=p.getString(kind+"_uri","");if(raw.isEmpty())continue;
-                    if(!force&&snap.hash.equals(p.getString(kind+"_hash","")))continue;
+                String raw=p.getString("cloud_uri","");
+                if(!raw.isEmpty()&&(force||!snap.hash.equals(p.getString("cloud_hash","")))){
                     try {
                         write(c,Uri.parse(raw),snap.bytes());
-                        p.edit().putString(kind+"_hash",snap.hash).putLong(kind+"_at",now).remove(kind+"_error").apply();
-                    }catch(Exception ex){String msg=kind.equals("local")?"ফোনের ব্যাকআপ ফাইলে লেখা যায়নি। ফাইলটি আবার বেছে নিন।":"Drive/ক্লাউডের ফাইলে লেখা যায়নি। ইন্টারনেট ও ফাইলের অনুমতি পরীক্ষা করুন।";p.edit().putString(kind+"_error",msg).apply();if(errors.length()>0)errors.append("\n");errors.append(msg);}
+                        p.edit().putString("cloud_hash",snap.hash).putLong("cloud_at",now).remove("cloud_error").apply();
+                    }catch(Exception ex){String msg="Drive/ক্লাউডের ফাইলে লেখা যায়নি। ইন্টারনেট ও ফাইলের অনুমতি পরীক্ষা করুন।";p.edit().putString("cloud_error",msg).apply();errors.append(msg);}
                 }
                 p.edit().putLong("checked_at",now).apply();return errors.toString();
             }
@@ -78,7 +81,7 @@ public final class BackupManager {
                 // Keep a recovery copy before replacing the ledger, including an empty ledger.
                 saveInternal(c,"before-restore-"+System.currentTimeMillis()+".json",store.backup().bytes());prune(c,"before-restore-",3);
                 store.restore(snapshot);
-                prefs(c).edit().remove("internal_hash").remove("local_hash").remove("cloud_hash").remove("checked_at").apply();
+                prefs(c).edit().remove("internal_hash").remove("cloud_hash").remove("checked_at").apply();
             }
         }
     }

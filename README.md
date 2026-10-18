@@ -2,7 +2,7 @@
 
 An offline Android ledger for grocery shops in Bangladesh. The interface is in Bangla and amounts are shown in Bangladeshi taka.
 
-Current version: **0.2.0**. Requires Android 8.0 (API 26) or later; targets Android 15 (API 35).
+Current version: **0.3.0**. Requires Android 8.0 (API 26) or later; targets Android 15 (API 35).
 
 ## Features
 
@@ -13,16 +13,16 @@ Current version: **0.2.0**. Requires Android 8.0 (API 26) or later; targets Andr
 - Store the ledger locally in SQLite, using integer poisha for monetary values.
 - Activate Pro features with an offline license key.
 - Export and restore versioned JSON backups, with checksum and data validation.
-- Schedule backups approximately hourly or daily, updating a selected file when the ledger changes.
-- Select a backup document in local storage or a cloud document provider such as Google Drive.
+- Automatically update a selected Google Drive backup file approximately hourly when the ledger changes.
+- Download a one-time backup file to the phone whenever needed.
 
 Restoring a backup replaces the current ledger after confirmation. Import validation happens before replacement, and the database transaction rolls back if an insertion fails. Backup files do not contain the Pro license or account credentials.
 
 ## Backup behavior
 
-Automatic backups use Android's persisted `JobScheduler`. Battery management, device state, and background restrictions can delay a scheduled run; the interval is not an exact wall-clock guarantee.
+Automatic Google Drive backups use Android's persisted `JobScheduler`. Battery management, device state, and background restrictions can delay a scheduled run, so one hour is an approximate interval rather than an exact wall-clock guarantee.
 
-The app keeps an internal recovery copy. To keep a backup outside the app, select a document using the system file picker. Internal app copies are lost when app data is cleared or the phone is reset.
+The app keeps an internal recovery copy for safe restore operations. Users can also download a one-time backup file manually. Internal app copies and manually downloaded files kept only on the same phone can be lost when the phone is reset.
 
 Google Drive support uses Android's Storage Access Framework. The user selects a file through the installed Drive document provider; the app does not require its own OAuth client or a custom server. Drive must be installed and signed in to appear in the picker. A successful document write confirms that the provider accepted the file; it does not confirm that the provider finished uploading it. Verify the online copy in Drive before resetting a phone. Actual Google Drive synchronization still requires testing on a device with a signed-in Drive account.
 
@@ -54,7 +54,7 @@ export ANDROID_SDK_ROOT="/path/to/android-sdk"
 bash build.sh
 ```
 
-The build script verifies the APK signature and runs the money/phone unit checks. The resulting APK is `build/dokan-hisab-0.2.0.apk`.
+The build script verifies the APK signature and runs the money/phone unit checks. The resulting APK is `build/dokan-hisab-0.3.0.apk`.
 
 A local testing keystore is generated at `build/keys/local-test.jks` on the first build. Preserve that keystore for subsequent updates signed by the same identity. Signing keys and prebuilt APKs are excluded from Git. A fresh clone generates a different testing identity; use the original private keystore when building updates for an existing installation. The built-in testing keystore password is not intended for production release signing.
 
@@ -72,8 +72,8 @@ The current version was checked with:
 
 - 24 money and phone validation checks.
 - 18 SQLite ledger integration checks.
-- 38 backup, restore, offline license, document-provider, and scheduling checks.
-- Manual emulator checks for license activation, document creation through the Android file picker, and backup selection with a restore confirmation.
+- 40 backup, restore, offline license, document-provider, and scheduling checks.
+- Manual emulator checks for the Drive-only hourly auto-backup screen, one-time phone backup download, and backup selection with a restore confirmation.
 
 `tests/ui_smoke.py` contains the earlier ledger UI smoke flow and expects a fresh, disposable emulator with an empty ledger. It is not a test of Google Drive synchronization.
 

@@ -20,8 +20,8 @@ cp build/resources.apk build/unsigned.apk
 if [ ! -f build/keys/local-test.jks ]; then
   "$JAVA_HOME/bin/keytool" -genkeypair -noprompt -keystore build/keys/local-test.jks -storepass android -keypass android -alias dokan -keyalg RSA -keysize 2048 -validity 10000 -dname 'CN=Dokan Hisab Local Test'
 fi
-"$BT/apksigner" sign --ks build/keys/local-test.jks --ks-key-alias dokan --ks-pass pass:android --key-pass pass:android --out build/dokan-hisab-0.2.0.apk build/aligned.apk
-"$BT/apksigner" verify --verbose build/dokan-hisab-0.2.0.apk
+"$BT/apksigner" sign --ks build/keys/local-test.jks --ks-key-alias dokan --ks-pass pass:android --key-pass pass:android --out build/dokan-hisab-0.3.0.apk build/aligned.apk
+"$BT/apksigner" verify --verbose build/dokan-hisab-0.3.0.apk
 mkdir -p build/unit-tests
 "$JAVA_HOME/bin/javac" -encoding UTF-8 -d build/unit-tests src/bd/dokanhisab/app/Money.java tests/MoneyTest.java
 "$JAVA_HOME/bin/java" -cp build/unit-tests MoneyTest
