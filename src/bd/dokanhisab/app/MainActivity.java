@@ -164,8 +164,8 @@ public final class MainActivity extends Activity {
     }
     private void about() {
         boolean pro=LicenseManager.isPro(this);
-        String body="dokan hisab · ০.৩.০\n\nইন্টারনেট ছাড়াই আপনার ফোনে হিসাব সেভ হয়।\n\nঅ্যাপ আনইনস্টল করলে বা অ্যাপের ডেটা মুছলে ফোনে থাকা হিসাব হারিয়ে যাবে। অ্যাপের বাইরে ব্যাকআপের কপি থাকলে পরে ফিরিয়ে আনা যাবে।\n\n"+(pro?"আপনার Pro লাইসেন্স সক্রিয়।":"ব্যাকআপ সুবিধা নিতে আপনার অ্যাপে প্রিমিয়াম লাইসেন্স সক্রিয় করুন।")+"\nযোগাযোগ: 01930162223";
-        new AlertDialog.Builder(this).setTitle("dokan hisab").setMessage(body).setNegativeButton("বন্ধ করুন",null).setNeutralButton(pro?"লাইসেন্সের তথ্য":"Activate license",(d,w)->{if(pro)message("Pro লাইসেন্স সক্রিয়\nলাইসেন্স: ••••• "+LicenseManager.suffix(this)+"\n\nফোন রিসেট বা অ্যাপ আনইনস্টল করলে একই লাইসেন্স কী আবার লিখতে হবে।");else licenseForm();}).setPositiveButton("ব্যাকআপ",(d,w)->backupSettings()).show();
+        String body="Dokan Hisab · ০.৩.০\n\nইন্টারনেট ছাড়াই আপনার ফোনে হিসাব সেভ হয়।\n\nঅ্যাপ আনইনস্টল করলে বা অ্যাপের ডেটা মুছলে ফোনে থাকা হিসাব হারিয়ে যাবে। অ্যাপের বাইরে ব্যাকআপের কপি থাকলে পরে ফিরিয়ে আনা যাবে।\n\n"+(pro?"আপনার Pro লাইসেন্স সক্রিয়।":"ব্যাকআপ সুবিধা নিতে আপনার অ্যাপে প্রিমিয়াম লাইসেন্স সক্রিয় করুন।")+"\nযোগাযোগ: 01930162223";
+        new AlertDialog.Builder(this).setMessage(body).setNegativeButton("বন্ধ করুন",null).setNeutralButton(pro?"লাইসেন্সের তথ্য":"Activate license",(d,w)->{if(pro)message("Pro লাইসেন্স সক্রিয়\nলাইসেন্স: ••••• "+LicenseManager.suffix(this)+"\n\nফোন রিসেট বা অ্যাপ আনইনস্টল করলে একই লাইসেন্স কী আবার লিখতে হবে।");else licenseForm();}).setPositiveButton("ব্যাকআপ",(d,w)->backupSettings()).show();
     }
     private void licenseForm() {
         LinearLayout f=form();add(f,text("ব্যাকআপ, অটো ব্যাকআপ ও হিসাব ফিরিয়ে আনার সুবিধা চালু করুন।",15,muted,false),8);label(f,"লাইসেন্স কী");EditText key=field("DH-XXXXX-XXXXX-XXXXX-XXXXX",InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS,40);add(f,key,8);
